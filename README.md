@@ -1,2 +1,2 @@
 # Risk-Based-Module-seggregation
-Scope of Testing :  Execution of 3 million test cases covering areas like Camera, Video, Graphics, Display, SSG, Frameworks, and WLAN. Repetition Across SPs :  Full test suite  run for multiple post CS SPs to ensure consistent compliance and functionality. Risk based module segregation is ML to optimize test execution and save time.
+Scope of Testing :  Execution of 3 million test cases covering areas like Camera, Video, Graphics, Display, SSG, Frameworks, and WLAN. Repetition Across SPs :  Full test suite  run for multiple post CS SPs to ensure consistent compliance and functionality. Risk based module segregation is ML to optimize test execution.
