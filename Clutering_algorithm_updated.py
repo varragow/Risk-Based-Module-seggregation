@@ -39,14 +39,14 @@ def parse_confluence_data():
                         reference_data.append([rows[0],rows[4]])
     return reference_data
 def create_subplan(filtered_df, suite, clusters):
-    suite_wise_testcase_count=0
+    cluster_wise_count=0
     module_list = filtered_df['Module'].tolist()
     if len(module_list) != 0:
         for modules in module_list:
             for rows in parse_confluence_data():
                 # print(rows)
                 if modules == rows[0]:
-                    suite_wise_testcase_count += int(rows[1])
+                    cluster_wise_count += int(rows[1])
         new_root = minidom.Document()
         xml = new_root.createElement("Subplan")
         xml.setAttribute("version", "2.0")
@@ -56,7 +56,7 @@ def create_subplan(filtered_df, suite, clusters):
             entry.setAttribute("include", f"{module}")
             xml.appendChild(entry)
         xml_str = new_root.toprettyxml(indent="\t")
-        return xml_str,suite_wise_testcase_count
+        return xml_str,cluster_wise_count
     else:
         return 0,0
 def convert_ms_to_hms(milliseconds):
@@ -162,28 +162,26 @@ with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
                 # print(f"Center of cluster {cluster}: x={row['mean']}, y={row['Coefficient of Variation']}")
                 prioritized_clusters.append(cluster)
             print(f"Prioritized clusters:{prioritized_clusters}")
-
-            #=========================================
-            for clusters in prioritized_clusters:
-                cluster_wise_test_case_count=0
-                cluster_dir = os.path.join(os.getcwd(), time_stamp, f"P-{prioritized_clusters.index(clusters)}")
-                os.makedirs(cluster_dir, exist_ok=True)
-                print("="*30,f"\nCLUSTER {clusters}\n","="*30)
-                for suite in unique_suites:
+            for suite in unique_suites:
+                suite_wise_count=0
+                suite_dir = os.path.join(os.getcwd(), time_stamp, f"{suite}")
+                os.makedirs(suite_dir, exist_ok=True)
+                print("="*30,f"\n {suite}\n","="*30)
+                for clusters in prioritized_clusters:
                     filtered_df = df[(df['Cluster'] == clusters) & (df['Suite'] == suite)]
-                    my_xml_str,suite_wise_testcase_count = create_subplan(filtered_df, suite, clusters)# Subplan creation
-                    if my_xml_str != 0 and suite_wise_testcase_count >0:
-                        cluster_wise_test_case_count += suite_wise_testcase_count
-                        print(f"Cluster : {clusters} ||Suite :{suite} || Total Testcases : {suite_wise_testcase_count}")
-                        with open(os.path.join(os.getcwd(), time_stamp, f"P-{prioritized_clusters.index(clusters)}", f"{suite}.xml"),'w') as f:
+                    my_xml_str,cluster_wise_count = create_subplan(filtered_df, suite, clusters)# Subplan creation
+                    if my_xml_str != 0 and cluster_wise_count >0:
+                        suite_wise_count += cluster_wise_count
+                        print(f"Suite :{suite} || Cluster : {clusters}  || Total Testcases : {cluster_wise_count}")
+                        with open(os.path.join(os.getcwd(), time_stamp, f"{suite}", f"P-{prioritized_clusters.index(clusters)}.xml"),'w') as f:
                             f.write(my_xml_str)
-                            print(f">> {suite}.xml is created Successfully in {cluster_dir}")
+                            print(f">> P-{prioritized_clusters.index(clusters)}_{cluster_wise_count}.xml is created Successfully in {suite_dir}")
 
                     # Code to Calculate time for each cluster
                     time_consumption_data.append(calculate_time_taken(filtered_df, suite, clusters))
-                print(f"\n *** Total testcases in {clusters} is {cluster_wise_test_case_count}")
-                os.rename(os.path.join(os.getcwd(),time_stamp,f"P-{prioritized_clusters.index(clusters)}"),os.path.join(os.getcwd(),time_stamp,f"P-{prioritized_clusters.index(clusters)}_{cluster_wise_test_case_count}"))
-                print(f">> Renamed folder name from P-{prioritized_clusters.index(clusters)} to  P-{prioritized_clusters.index(clusters)}_{cluster_wise_test_case_count}")
+                print(f"\n *** Total testcases in {suite} is {suite_wise_count}")
+                os.rename(os.path.join(os.getcwd(),time_stamp,f"{suite}"),os.path.join(os.getcwd(),time_stamp,f"{suite}_{suite_wise_count}"))
+                print(f">> Renamed folder name from {suite} to  {suite}_{suite_wise_count}")
 
             # =========================================
             print("\n\n","="*100)
