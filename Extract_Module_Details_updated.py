@@ -103,12 +103,14 @@ def save_current_count(count):
         print(">> json created")
 
 
-if os.path.exists(os.path.join(os.getcwd(),"Final_TestCases_Data.xlsx")):
-    os.path.join(os.getcwd(),"Final_TestCases_Data.xlsx")
-    os.remove(os.path.join(os.getcwd(),"Final_TestCases_Data.xlsx"))
+
 state_file=os.path.join(os.getcwd(),"config.json")
 flag=check_dir_for_new_entries(state_file)
+# flag='y'
 if (flag == True) or (flag == 'y') :
+    if os.path.exists(os.path.join(os.getcwd(),"Final_TestCases_Data.xlsx")):
+        os.path.join(os.getcwd(),"Final_TestCases_Data.xlsx")
+        os.remove(os.path.join(os.getcwd(),"Final_TestCases_Data.xlsx"))
     with pd.ExcelWriter("Final_TestCases_Data.xlsx", engine="openpyxl") as writer:
         for root, dirs, files in os.walk(os.path.join(os.getcwd(),"CBT_Dataset")):
             for file in files:
