@@ -1,0 +1,19 @@
+# Core dependencies for the Dash application
+dash
+pandas
+plotly
+
+# Machine learning and data processing dependencies
+scikit-learn
+matplotlib
+kneed
+
+# Excel file handling dependencies
+openpyxl
+
+# HTTP requests and web scraping dependencies
+requests
+beautifulsoup4
+
+# Cryptography dependencies
+cryptography
