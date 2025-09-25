@@ -92,15 +92,15 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 print(">> Entering Callback function")
 scatter_plot, cluster_centers = generate_scatter_plot(numeric_data)
 app.layout = html.Div([
-    html.H1("Categorized Data Dashboard", style={'marginBottom': '24px'}),
+    html.H1("Risk Based Module Segregation",style={'marginBottom': '24px'}),
+    html.H2("Categorized Data Dashboard", style={'marginBottom': '24px'}),
     
     html.Div([
         dcc.Graph(id='example-graph', figure=scatter_plot),
         html.Div([
             html.Div(id='cluster-suite-table-container', style={'marginBottom': '24px'}),
             html.Div(id='priority-bar-container', style={'marginBottom': '24px'}),
-            html.H6("Subplans are available below:", style={'marginBottom': '12px', 'fontWeight': 'bold', 'color': '#333'}),
-            html.Div(f"{contents}", style={'marginBottom': '24px', 'color': '#555'})
+            html.H6(f"Find the subplans here : {contents}")
         ], style={
             'display': 'flex',
             'flexDirection': 'column',
@@ -181,7 +181,7 @@ def update_bar_chart(hoverData):
         functionality_counts,
         x='Functionality',
         y='count',
-        # title=f'Functionality Count for Cluster {cluster_value}',
+        title=f'Functionality Count for Cluster {cluster_value}',
         labels={'Functionality': 'Functionality', 'count': 'Count'},
         text='count'  # Display count on the bar
     )
@@ -197,10 +197,8 @@ def update_bar_chart(hoverData):
         height=600
     )
 
-    return html.Div([
-    html.H3(f"Cluster: {cluster_value} - Cluster Vs TechArea"),
-    dcc.Graph(id='functionality-bar-chart', figure=fig)
-    ])
+    return dcc.Graph(id='functionality-bar-chart', figure=fig)
+
 # Callback to update the new cluster-suite table
 @app.callback(
     Output('cluster-suite-table-container', 'children'),
@@ -268,4 +266,4 @@ def update_priority_bar(hoverData):
 
 # Run the app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8050)

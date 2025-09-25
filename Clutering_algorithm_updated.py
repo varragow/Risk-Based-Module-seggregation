@@ -14,7 +14,7 @@ import shutil
 import pickle
 import csv
 import confluence_get_page
-
+import json
 path = r'\\rover\cts\Axiom\Executables\ModuleVsTechArea_Data'
 # Data
 output_file_path = os.path.join(os.getcwd(), 'categorized_data.xlsx')
@@ -238,3 +238,13 @@ def main():
 
 if __name__ == '__main__':
     main()
+    state_file=os.path.join(os.getcwd(),"config.json")
+    with open(state_file,"r+") as file:
+        data=json.load(file)
+        data["execution_status"]=0
+        
+        file.seek(0)
+        json.dump(data, file, indent=4)
+        file.truncate()
+        print(">> Updated execution status to 0 in config.json")
+        file.close()

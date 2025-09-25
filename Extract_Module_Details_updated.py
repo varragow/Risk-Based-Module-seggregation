@@ -78,8 +78,7 @@ def get_file_count(path, f_count):
 
 
 def check_dir_for_new_entries(state_file):
-
-    if os.path.exists(os.path.join(os.getcwd(), "config.json")):
+    if os.path.exists(state_file) and os.path.getsize(state_file)>0:
         with open(state_file, "r") as f:
             previous_count=json.load(f).get('file_count',0)
             print(previous_count)
@@ -87,20 +86,26 @@ def check_dir_for_new_entries(state_file):
             if(previous_count!= current_count):
                 print(f"** Previous Count :{previous_count} || Current Count : {current_count}")
                 print("** Proceeding with parsing and preprocessing the data")
-                save_current_count(current_count)
+                save_current_count(current_count,1)
                 return True
             else:
+                save_current_count(current_count,0)
                 prompt=input("** There is no new snapshot added or change in files,Still want to continue parsing and preprocessing the existing dataset ?? (y/n) : ")
                 return prompt
 
     else:
-        print("** No json file found")
-        save_current_count(get_file_count(os.path.join(os.getcwd(),"CBT_Dataset"),0))
+        print("** Issue with json file , either no file exists or no data in json exists !!!")
+        save_current_count(get_file_count(os.path.join(os.getcwd(),"CBT_Dataset"),0),1)
         return True
-def save_current_count(count):
-    with open(state_file, "w") as f:
-        json.dump({"file_count": count}, f)
-        print(">> json created")
+def save_current_count(count,execution_status):
+    data={"file_count":count , "execution_status":execution_status}
+    with open(state_file,"w") as file:
+        json.dump(data,file,indent=4)
+        file.close()
+
+    # with open(state_file, "w") as f:
+    #     json.dump({"file_count": count}, f)
+    #     print(">> json created")
 
 
 
@@ -108,6 +113,7 @@ state_file=os.path.join(os.getcwd(),"config.json")
 flag=check_dir_for_new_entries(state_file)
 # flag='y'
 if (flag == True) or (flag == 'y') :
+    
     if os.path.exists(os.path.join(os.getcwd(),"Final_TestCases_Data.xlsx")):
         os.path.join(os.getcwd(),"Final_TestCases_Data.xlsx")
         os.remove(os.path.join(os.getcwd(),"Final_TestCases_Data.xlsx"))
